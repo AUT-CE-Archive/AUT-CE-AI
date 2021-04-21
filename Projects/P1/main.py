@@ -1,6 +1,7 @@
 # Imports
 from a_star import Astar
 from graph import Graph
+import heapq
 
 # Driver function
 if __name__ == '__main__':
@@ -34,12 +35,11 @@ if __name__ == '__main__':
 
 	astar = Astar()
 	start = graph.graph[0][0]
-	goal = graph.graph[4][4]
+	goal = graph.graph[3][0]
 	path = astar.search(graph, start, goal)
-
-	for node in path:
-		print(node.get_coor(), end = '\t')
-	print()
+	
+	for key in path.keys():
+		print(key.get_coor(), path[key].get_coor())
 
 
 	# print(graph.get_neighbors((3, 3)))
