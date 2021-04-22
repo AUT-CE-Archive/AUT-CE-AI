@@ -1,29 +1,16 @@
+# Imports
+from node import Node
 
-class Node:
-	''' Node object '''
-
-	def __init__(self, x, y, g):
-		''' Constructor '''
-		self.x, self.y, self.g = x, y, g
-		self.f = 0
-		self.parent = None
-
-
-	def get_coor(self):
-		''' Returns the x, y as typle '''
-		return self.x, self.y
-
-
-class Graph:
+class Graph:	
 	''' Graph object '''
 
-	def __init__(self, graph):
+	def __init__(self, matrix):
 		''' Constructor '''
 		self.graph = []
 
 		# Create graph with node objects
-		for i, row in enumerate(graph):
-			self.graph.append([Node(i, j, int(col)) for j, col in enumerate(row)])
+		for i, row in enumerate(matrix):
+			self.graph.append([Node((i, j), int(col)) for j, col in enumerate(row)])
 
 
 	def get_neighbors(self, node):

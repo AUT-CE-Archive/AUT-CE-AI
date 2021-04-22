@@ -1,7 +1,4 @@
-# Imports
-from typing import Counter
-from priority_queue import PriorityQueue
-
+from node import Node
 
 class Astar:
     ''' A* Object '''
@@ -22,83 +19,65 @@ class Astar:
 
     def search(self, graph, start, goal):
 
-        # Create frontier queue
-        frontier = PriorityQueue()
-        frontier.put(start, 0)
+        # Convert coordinates to Node objects
+        start = Node(start, 0)
+        goal = Node(goal, 0)
 
-        # Best route
-        path = []        
+        # Define open & closed sets
+        open_set = [start.get_coor()]
+        closed_set = []
 
-        # G score - Cost of the cheapest path from start to n currently known
-        g_scores = {}
-        g_scores[start] = 0
+        # While fringe is not empty
+        while open_set:
 
-        while not frontier.empty():
+            # Get node with minimum f()
+            x, y = open_set[0]
+            current = graph.graph[x][y]
+            for node in open_set:
 
-            # Get the node with highest priority
-            current_x, current_y = frontier.get()
-            current = graph.graph[current_x][current_y]
+                x, y = node
+                node = graph.graph[x][y]
+                
+                if node.f < current.f:
+                    current = node
 
-            if current == goal:
-                break
+            if current.get_coor() == goal.get_coor():
 
-            tmp = []
-
-            print(current.get_coor(), [(node.x, node.y) for node in graph.get_neighbors(current)])            
-
-            while True:
-
-                neighbors2 = graph.get_neighbors(current)
-                neighbors = []
-
-                print('N2:', [(node.x, node.y) for node in neighbors2])
-
-                if current.parent is None:
-                    neighbors = neighbors2
-                    break
-
-                for neighbor in neighbors2:                    
-
-                    x1, y1 = neighbor.get_coor()
-                    x2, y2 = current.parent.get_coor()
-
-                    if not (x1 == x2 and y1 == y2):
-                        neighbors.append(neighbor)
-
-                if len(neighbors2) == 0:
+                # Backtrack the path
+                path = []
+                while current.parent is not None:
+                    path.append(current)
                     current = current.parent
-                else:
-                    break
 
-            print('N:', [(node.x, node.y) for node in neighbors])
+                return path
 
+            # Move current node from open set to closed set
+            open_set.remove(current.get_coor())
+            closed_set.append(current.get_coor())
+
+            # Search for each neighbor
+            neighbors = graph.get_neighbors(current)
             for neighbor in neighbors:
 
-                # Get neighbor's x, y
                 x, y = neighbor.get_coor()
 
-                g = g_scores[current] + graph.graph[x][y].g
+                # if neighbor has not already been searched
+                if neighbor.get_coor() not in closed_set:
 
-                if (neighbor not in g_scores) or (g < g_scores[neighbor]):
-                    g_scores[neighbor] = g
+                    # Calculate g()
+                    g = current.g + graph.graph[x][y].g
 
-                    h = self.heuristic(neighbor, goal)
-                    f = g + h
-                    neighbor.f = f
+                    if neighbor.get_coor() in open_set:
+                        if g < neighbor.g:
+                            neighbor.g = g
+                    else:
+                        neighbor.g = g
+                        open_set.append(neighbor.get_coor())   # Add the neighbor to the frontier
 
-                    # Add neighbor to the frontier
-                    frontier.put(neighbor, f)
+                    # Adjust neighbors' properties
+                    neighbor.h = self.heuristic(neighbor, goal)
+                    neighbor.f = neighbor.g + neighbor.h
+                    neighbor.parent = current
 
-                    tmp.append(neighbor)
-
-            if len(tmp) != 0:
-                best_node = tmp[0]
-                for node in tmp:
-                    if node.f < best_node.f:
-                        best_node = node
-
-                path.append(best_node)
-                best_node.parent = current
-
-
-        return [start] + path
+        # No path found ):
+        return []
