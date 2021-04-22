@@ -39,36 +39,11 @@ if __name__ == '__main__':
 
 	graph = Graph(matrix)
 
-
-	for row in graph.graph:
-		for col in row:
-			print(col.g, end = '\t')
-		print()
-
-
 	astar = Astar()
-
-	butter_paths = []
-	for butter in butters:
-
-		butter_x, butter_y = butter
-		robat_x, robat_y = robat
-
-		# path = astar.search(graph, start = graph.graph[robat_x][robat_y], goal = graph.graph[butter_x][butter_y])
-		path = astar.search(graph, start = graph.graph[0][0], goal = graph.graph[3][2])		
-		butter_paths.append(path)
-
-
-	for path in butter_paths:
-		print([(node.x, node.y) for node in path])
-
-
-	# start = graph.graph[0][0]
-	# goal = graph.graph[3][0]
-	# path = astar.search(graph, start, goal)
+	path = astar.search(graph, (0, 0), (4, 0))
 	
-	# for node in path:
-	# 	print(node.get_coor())
+	for node in path:
+		print(node.get_coor(), end = ' ')
 '''
 
 5	5
