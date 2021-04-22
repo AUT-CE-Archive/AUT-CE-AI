@@ -5,6 +5,8 @@ class Node:
 	def __init__(self, x, y, g):
 		''' Constructor '''
 		self.x, self.y, self.g = x, y, g
+		self.f = 0
+		self.parent = None
 
 
 	def get_coor(self):

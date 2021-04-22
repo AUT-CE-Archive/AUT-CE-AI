@@ -27,7 +27,7 @@ class Astar:
         frontier.put(start, 0)
 
         # Best route
-        path = {}
+        path = []        
 
         # G score - Cost of the cheapest path from start to n currently known
         g_scores = {}
@@ -42,7 +42,37 @@ class Astar:
             if current == goal:
                 break
 
-            for neighbor in graph.get_neighbors(current):
+            tmp = []
+
+            print(current.get_coor(), [(node.x, node.y) for node in graph.get_neighbors(current)])            
+
+            while True:
+
+                neighbors2 = graph.get_neighbors(current)
+                neighbors = []
+
+                print('N2:', [(node.x, node.y) for node in neighbors2])
+
+                if current.parent is None:
+                    neighbors = neighbors2
+                    break
+
+                for neighbor in neighbors2:                    
+
+                    x1, y1 = neighbor.get_coor()
+                    x2, y2 = current.parent.get_coor()
+
+                    if not (x1 == x2 and y1 == y2):
+                        neighbors.append(neighbor)
+
+                if len(neighbors2) == 0:
+                    current = current.parent
+                else:
+                    break
+
+            print('N:', [(node.x, node.y) for node in neighbors])
+
+            for neighbor in neighbors:
 
                 # Get neighbor's x, y
                 x, y = neighbor.get_coor()
@@ -54,39 +84,21 @@ class Astar:
 
                     h = self.heuristic(neighbor, goal)
                     f = g + h
+                    neighbor.f = f
 
                     # Add neighbor to the frontier
                     frontier.put(neighbor, f)
 
-                    path[neighbor] = current
+                    tmp.append(neighbor)
 
-        return path
+            if len(tmp) != 0:
+                best_node = tmp[0]
+                for node in tmp:
+                    if node.f < best_node.f:
+                        best_node = node
+
+                path.append(best_node)
+                best_node.parent = current
 
 
-    # def search(self, graph, start, goal):
-
-    #     open_list = PriorityQueue()
-    #     open_list.put(start, 0)
-    #     closed_list = []
-
-    #     while open_list:
-
-    #         current = open_list.get()
-    #         closed_list.append(current)
-
-    #         if current == goal:
-    #             break
-
-    #         for neighbor in graph.get_neighbors(current):                
-
-    #             if neighbor not in closed_list:
-
-    #                 g = graph.graph[neighbor.x][neighbor.y].g + 1
-    #                 h = self.heuristic(neighbor, goal)
-    #                 f = g + h
-
-    #                 for node in open_list:
-    #                     if node == neighbor and neighbor.g > node.g:
-    #                         continue
-
-    #                 open_list.append(neighbor)
+        return [start] + path
