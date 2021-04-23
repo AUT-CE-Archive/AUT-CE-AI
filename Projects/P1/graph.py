@@ -13,6 +13,16 @@ class Graph:
 			self.graph.append([Node((i, j), int(col)) for j, col in enumerate(row)])
 
 
+	def adjust(self, goal, butters):
+		''' Marks other butters as obstacles '''
+
+		# Remove goal from butters list
+		butters.remove(goal)
+
+		for butter in butters:
+			self.graph[butter[0]][butter[1]].g = -1
+
+
 	def get_neighbors(self, node):
 		''' Returns the neightbors of the given node '''
 		x, y = node.get_coor()

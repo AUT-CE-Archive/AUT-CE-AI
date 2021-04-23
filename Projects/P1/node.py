@@ -4,7 +4,7 @@ class Node:
 	def __init__(self, coor, g):
 		''' Constructor '''
 		
-		self.g, self.h, self.f = g, None, 0
+		self.g, self.h, self.f, self.p = g, None, 0, None
 		self.x, self.y = coor
 		self.neighbors = []
 		self.parent = None
