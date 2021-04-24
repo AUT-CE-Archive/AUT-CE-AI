@@ -25,6 +25,7 @@ class Astar:
         graph = Graph(matrix)
         parent = neighbor.parent
 
+        # In case its the starting node
         if parent is None:
             return 0, []
 
@@ -48,19 +49,15 @@ class Astar:
                 dest = (parent.x - 1, parent.y)
 
 
+        # If no previous positioning is available, then robot has not moved
         if len(parent.positioning) == 0:
             parent.positioning.append(robot)
 
-
         # Get a path
-        path = astar.robot_search(matrix = matrix, start = parent.positioning[-1], goal = dest, butters = [])
+        path = astar.robot_search(matrix = matrix, start = parent.positioning[-1], goal = dest, butters = []) + [parent.get_coor()]
+        path += [parent.get_coor()]     # Add the parent node which robot will push
 
-        '''
-        dest: robot
-        neighbor: butter
-        '''
-        print(dest, parent.get_coor(), neighbor.get_coor(), path)
-
+        # Calculate the f() of the entire route the robot should move
         f_sum = 0
         for node in path:
             f_sum += graph.graph[node[0]][node[1]].g
@@ -112,10 +109,10 @@ class Astar:
                 # Backtrack the path
                 path = []
                 while current.parent is not None:
-                    path.append(current.get_coor())
+                    path.append((current.get_coor(), current.positioning))
                     current = current.parent
 
-                return [start.get_coor()] + path[::-1]
+                return [(start.get_coor(), start.positioning)] + path[::-1]
 
             # Move current node from open set to closed set
             open_set.remove(current.get_coor())

@@ -16,10 +16,16 @@ def get_best_butter_path(matrix, start, butters):
 
 	for butter in butters:
 
-		path = astar.search(matrix = matrix, start = start, goal = butter, butters = butters)
+		path = astar.search(
+			matrix = matrix,
+			start = start,
+			goal = butter,
+			butters = butters
+		)
 
 		f_sum = 0
 		for node in path:
+			node = node[0]
 			f_sum += graph.graph[node[0]][node[1]].f
 
 		if (best_f_sum is None) or (f_sum < best_f_sum):
@@ -39,10 +45,17 @@ def get_best_goal_path(matrix, start, goals, butters, robot):
 
 	for goal in goals:
 
-		path = astar.search(matrix = matrix, start = start, goal = goal, butters = butters, robot = robot)
+		path = astar.search(
+			matrix = matrix,
+			start = start[0],
+			goal = goal,
+			butters = butters,
+			robot = robot
+		)
 
 		f_sum = 0
 		for node in path:
+			node = node[0]
 			f_sum += graph.graph[node[0]][node[1]].f
 
 
@@ -75,8 +88,22 @@ if __name__ == '__main__':
 		(5, 5), (3, 8)
 	]
 
-	best_butter_path = get_best_butter_path(matrix = matrix, start = robot, butters = butters)
-	print(best_butter_path)
+	best_butter_path = get_best_butter_path(
+		matrix = matrix,
+		start = robot,
+		butters = butters
+	)
+	for node in best_butter_path:
+		print(node)
 
-	best_goal_path = get_best_goal_path(matrix = matrix, start = best_butter_path[-1], goals = goals, butters = butters, robot = robot)
-	print(best_goal_path)
+	print('\n\n')
+
+	best_goal_path = get_best_goal_path(
+		matrix = matrix,
+		start = best_butter_path[-1],
+		goals = goals,
+		butters = butters,
+		robot = (2, 2)
+	)
+	for node in best_goal_path:
+		print(node)
