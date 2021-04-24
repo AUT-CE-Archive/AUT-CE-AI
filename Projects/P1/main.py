@@ -1,69 +1,5 @@
 # Imports
-from a_star import Astar
-import heapq
-from graph import Graph
-
-
-
-
-def get_best_butter_path(matrix, start, butters):
-
-	astar = Astar()
-	graph = Graph(matrix)
-
-	best_butter_path = None
-	best_f_sum = None
-
-	for butter in butters:
-
-		path = astar.search(
-			matrix = matrix,
-			start = start,
-			goal = butter,
-			butters = butters
-		)
-
-		f_sum = 0
-		for node in path:
-			node = node[0]
-			f_sum += graph.graph[node[0]][node[1]].f
-
-		if (best_f_sum is None) or (f_sum < best_f_sum):
-			best_f_sum = f_sum
-			best_butter_path = path
-
-	return best_butter_path
-
-
-def get_best_goal_path(matrix, start, goals, butters, robot):
-
-	astar = Astar()
-	graph = Graph(matrix)
-
-	best_goal_path = None
-	best_f_sum = None	
-
-	for goal in goals:
-
-		path = astar.search(
-			matrix = matrix,
-			start = start[0],
-			goal = goal,
-			butters = butters,
-			robot = robot
-		)
-
-		f_sum = 0
-		for node in path:
-			node = node[0]
-			f_sum += graph.graph[node[0]][node[1]].f
-
-
-		if (best_f_sum is None) or (f_sum < best_f_sum):
-			best_f_sum = f_sum
-			best_goal_path = path
-
-	return best_goal_path
+from mapper import *
 
 
 # Driver function
@@ -88,22 +24,37 @@ if __name__ == '__main__':
 		(5, 5), (3, 8)
 	]
 
-	best_butter_path = get_best_butter_path(
-		matrix = matrix,
-		start = robot,
-		butters = butters
-	)
-	for node in best_butter_path:
-		print(node)
 
-	print('\n\n')
 
-	best_goal_path = get_best_goal_path(
+	pairs = get_routes (
 		matrix = matrix,
-		start = best_butter_path[-1],
-		goals = goals,
-		butters = butters,
 		robot = robot,
+		butters = butters,
+		goals = goals
 	)
-	for node in best_goal_path:
-		print(node)
+	print('Routes:', pairs, end = '\n' * 3)
+
+	astar = Astar()
+	for pair in pairs:
+
+		print('Pair:', pair, ':')
+		
+		path = astar.search(
+			matrix = matrix,
+			start = pair[0],
+			goal = pair[1],
+			butters = butters,
+			robot = robot,
+		)
+
+		# Save robot's latest location
+		robot = path[-2][0]
+
+		# Remove the butter and goal
+		butters.remove(pair[0])
+		goals.remove(pair[1])
+
+		for node in path:
+			print(node)
+
+		print('\n' * 2)

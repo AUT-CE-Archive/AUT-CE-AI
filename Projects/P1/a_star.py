@@ -25,8 +25,7 @@ class Astar:
         parent = neighbor.parent
 
         # In case its the starting node
-        if parent is None:
-            return 0, []
+        if parent is None: return []
 
         # Calculate deltas
         delta_x = neighbor.x - parent.x
@@ -51,17 +50,12 @@ class Astar:
             abundants = [parent.get_coor()]
         ) + [(parent.get_coor(), [])]           # Add the parent node which robot will push
 
-        # Calculate the f() of the entire route the robot should move
-        f_sum = 0
-        for node in path:
-            node = node[0]
-            f_sum += graph.graph[node[0]][node[1]].g
-
         # Return final results
-        return (10000, []) if (len(path) == 0) else f_sum, [node[0] for node in path]
+        return [] if (len(path) == 0) else [node[0] for node in path]
 
 
     def search(self, matrix, start, goal, butters, robot = None, abundants = []):
+        ''' Core A* algorithm '''
 
         graph = Graph(matrix)
 
@@ -133,18 +127,16 @@ class Astar:
                     # Adjust neighbors' properties
                     neighbor.parent = current
                     neighbor.h = self.heuristic(neighbor, goal)
+                    neighbor.f = neighbor.g + neighbor.h
 
                     # Trace robot if not None
                     if robot is not None:
-                        neighbor.p, neighbor.positioning = self.positioning(
+                        neighbor.positioning = self.positioning(
                             matrix = matrix,
                             neighbor = neighbor,
                             robot = robot,
                             butters = butters
-                        )
-
-                    # Calculate f()
-                    neighbor.f = neighbor.g + neighbor.h
+                        )                    
 
         # No path found ):
         return []
