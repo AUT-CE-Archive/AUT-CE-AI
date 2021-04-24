@@ -2,7 +2,7 @@
 from a_star import Astar
 from graph import Graph
 
-def get_routes(matrix, robot, butters, goals):
+def get_routes(matrix, butters, goals):
 	''' Returns the routes the robot must go '''
 
 	astar = Astar()
@@ -18,7 +18,7 @@ def get_routes(matrix, robot, butters, goals):
 				matrix = matrix,
 				start = butter,
 				goal = goal,
-				butters = butters
+				butters = butters,
 			)
 
 			if (best_route is None) or (len(path) < len(best_route)):

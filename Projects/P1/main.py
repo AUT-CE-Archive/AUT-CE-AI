@@ -27,13 +27,12 @@ if __name__ == '__main__':
 
 
 	pairs = get_routes (
-		matrix = matrix,
-		robot = robot,
+		matrix = matrix,		
 		butters = butters,
 		goals = goals
 	)
 	print('Routes:', pairs, end = '\n' * 3)
-
+	
 	astar = Astar()
 	for pair in pairs:
 

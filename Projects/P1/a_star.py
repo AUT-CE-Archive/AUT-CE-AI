@@ -21,25 +21,35 @@ class Astar:
     def positioning(self, matrix, neighbor, robot, butters):
         ''' Repositions the Robot to push the Butter in desired direction '''
 
-        graph = Graph(matrix)
         parent = neighbor.parent
+        butters = butters.copy()
 
         # In case its the starting node
         if parent is None: return []
 
         # Calculate deltas
         delta_x = neighbor.x - parent.x
-        delta_y = neighbor.y - parent.y
+        delta_y = neighbor.y - parent.y        
 
         if delta_x == 0:        # Horizontal
             dest = (parent.x, parent.y + 1) if (delta_y < 0) else (parent.x, parent.y - 1)        
         else:                   # Vertical
             dest = (parent.x + 1, parent.y) if (delta_x < 0) else (parent.x - 1, parent.y)
 
+        if dest == (2, 7):
+            print('X')
+        if neighbor.get_coor() == (3, 8):
+            print('XXX')
+
 
         # If no previous positioning is available, then robot has not moved
         if len(parent.positioning) == 0:
             parent.positioning.append(robot)
+
+        # Remove initial target butter location        
+        for node in parent.positioning:
+            try: butters.remove(node)
+            except: pass
 
         # Get a path
         path = self.search(
@@ -71,7 +81,7 @@ class Astar:
 
         # Check if start or goal is not obstacles
         if graph.graph[start.x][start.y].g == -1 or graph.graph[goal.x][goal.y].g == -1:
-            return []
+                return []
 
         # Define open & closed sets
         open_set = [start.get_coor()]
@@ -127,7 +137,7 @@ class Astar:
                     # Adjust neighbors' properties
                     neighbor.parent = current
                     neighbor.h = self.heuristic(neighbor, goal)
-                    neighbor.f = neighbor.g + neighbor.h
+                    neighbor.f = neighbor.g + neighbor.h                    
 
                     # Trace robot if not None
                     if robot is not None:
