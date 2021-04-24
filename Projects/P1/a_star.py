@@ -21,7 +21,6 @@ class Astar:
     def positioning(self, matrix, neighbor, robot, butters):
         ''' Repositions the Robot to push the Butter in desired direction '''
 
-        astar = Astar()
         graph = Graph(matrix)
         parent = neighbor.parent
 
@@ -33,20 +32,10 @@ class Astar:
         delta_x = neighbor.x - parent.x
         delta_y = neighbor.y - parent.y
 
-        dest = None
-
-        # Horizontal
-        if delta_x == 0:
-            if delta_y < 0:
-                dest = (parent.x, parent.y + 1)
-            else:
-                dest = (parent.x, parent.y - 1)
-        # Vertical
-        else:
-            if delta_x < 0:
-                dest = (parent.x + 1, parent.y)
-            else:
-                dest = (parent.x - 1, parent.y)
+        if delta_x == 0:        # Horizontal
+            dest = (parent.x, parent.y + 1) if (delta_y < 0) else (parent.x, parent.y - 1)        
+        else:                   # Vertical
+            dest = (parent.x + 1, parent.y) if (delta_x < 0) else (parent.x - 1, parent.y)
 
 
         # If no previous positioning is available, then robot has not moved
@@ -54,14 +43,13 @@ class Astar:
             parent.positioning.append(robot)
 
         # Get a path
-        path = astar.search(
+        path = self.search(
             matrix = matrix,
             start = parent.positioning[-1],
             goal = dest,
             butters = butters,
             abundants = [parent.get_coor()]
-        )
-        path += [(parent.get_coor(), [])]     # Add the parent node which robot will push
+        ) + [(parent.get_coor(), [])]           # Add the parent node which robot will push
 
         # Calculate the f() of the entire route the robot should move
         f_sum = 0
@@ -69,19 +57,13 @@ class Astar:
             node = node[0]
             f_sum += graph.graph[node[0]][node[1]].g
 
-        # Unreachable goal
-        if len(path) == 0:
-            return 10000, []
-        else:
-            return f_sum, [node[0] for node in path]
+        # Return final results
+        return (10000, []) if (len(path) == 0) else f_sum, [node[0] for node in path]
 
 
     def search(self, matrix, start, goal, butters, robot = None, abundants = []):
 
         graph = Graph(matrix)
-
-        if goal == (5, 5):
-            print('X')
 
         # ONLY IF GOAL IS A BUTTER!
         if goal in butters:
