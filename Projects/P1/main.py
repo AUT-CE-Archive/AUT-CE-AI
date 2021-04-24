@@ -29,7 +29,7 @@ def get_best_butter_path(matrix, start, butters):
 	return best_butter_path
 
 
-def get_best_goal_path(matrix, start, goals, butters):
+def get_best_goal_path(matrix, start, goals, butters, robot):
 
 	astar = Astar()
 	graph = Graph(matrix)
@@ -39,7 +39,7 @@ def get_best_goal_path(matrix, start, goals, butters):
 
 	for goal in goals:
 
-		path = astar.search(matrix = matrix, start = start, goal = goal, butters = butters)
+		path = astar.search(matrix = matrix, start = start, goal = goal, butters = butters, robot = robot)
 
 		f_sum = 0
 		for node in path:
@@ -55,16 +55,6 @@ def get_best_goal_path(matrix, start, goals, butters):
 
 # Driver function
 if __name__ == '__main__':
-
-	# row_count, column_count = 5, 5
-
-	# input_matrix = [
-	# 	['2', '2', '2', '2', '2'],
-	# 	['2r', '1', '1', '1', '2'],
-	# 	['2', '1', '1b', '1', '2'],
-	# 	['2', '1', 'x', '1', '2'],
-	# 	['2', '2', '2p', '2', '2'],
-	# ]
 
 	matrix = [
 		['1', '1', '1', '1', '-1', '-1', '1', '1', '1', '1'],
@@ -85,14 +75,8 @@ if __name__ == '__main__':
 		(5, 5), (3, 8)
 	]
 
-	# Create graph
-	# graph = Graph(matrix)
-	
 	best_butter_path = get_best_butter_path(matrix = matrix, start = robot, butters = butters)
 	print(best_butter_path)
 
-	# Create graph
-	# graph = Graph(matrix)
-
-	best_goal_path = get_best_goal_path(matrix = matrix, start = best_butter_path[-1], goals = goals, butters = butters)
+	best_goal_path = get_best_goal_path(matrix = matrix, start = best_butter_path[-1], goals = goals, butters = butters, robot = robot)
 	print(best_goal_path)

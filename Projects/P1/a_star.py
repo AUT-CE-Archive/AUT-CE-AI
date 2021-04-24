@@ -18,49 +18,61 @@ class Astar:
         return abs(x1 - x2) + abs(y1 - y2)
 
 
-    def positioning(self, matrix, neighbor):
-        ''' '''
+    def positioning(self, matrix, neighbor, robot):
+        ''' Repositions the Robot to push the Butter in desired direction '''
 
         astar = Astar()
         graph = Graph(matrix)
         parent = neighbor.parent
 
         if parent is None:
-            return 0
+            return 0, []
 
+        # Calculate deltas
         delta_x = neighbor.x - parent.x
         delta_y = neighbor.y - parent.y
 
         dest = None
 
-        # Goes UP
+        # Horizontal
         if delta_x == 0:
             if delta_y < 0:
-                dest = (neighbor.x, neighbor.y + 1)
+                dest = (parent.x, parent.y + 1)
             else:
-                dest = (neighbor.x, neighbor.y - 1)
+                dest = (parent.x, parent.y - 1)
+        # Vertical
         else:
             if delta_x < 0:
-                dest = (neighbor.x + 1, neighbor.y)
+                dest = (parent.x + 1, parent.y)
             else:
-                dest = (neighbor.x - 1, neighbor.y)
+                dest = (parent.x - 1, parent.y)
 
 
-        path = astar.robot_search(matrix = matrix, start = parent.get_coor(), goal = dest, butters = [])
+        if len(parent.positioning) == 0:
+            parent.positioning.append(robot)
 
+
+        # Get a path
+        path = astar.robot_search(matrix = matrix, start = parent.positioning[-1], goal = dest, butters = [])
+
+        '''
+        dest: robot
+        neighbor: butter
+        '''
+        print(dest, parent.get_coor(), neighbor.get_coor(), path)
 
         f_sum = 0
         for node in path:
-            f_sum += graph.graph[node[0]][node[1]].f
+            f_sum += graph.graph[node[0]][node[1]].g
 
         # Unreachable goal
         if len(path) == 0:
-            return 10000
+            return 10000, []
         else:
-            return f_sum
+            return f_sum, path
 
 
-    def search(self, matrix, start, goal, butters):
+    def search(self, matrix, start, goal, butters, robot = None):
 
         butters = butters.copy()
         graph = Graph(matrix)
@@ -128,14 +140,38 @@ class Astar:
                         neighbor.g = g
                         open_set.append(neighbor.get_coor())   # Add the neighbor to the frontier
 
-                    # Adjust neighbors' properties                    
-                    neighbor.h = self.heuristic(neighbor, goal)
-                    neighbor.p = self.positioning(matrix, neighbor)
-                    neighbor.f = neighbor.g + neighbor.h
+                    # Adjust neighbors' properties
                     neighbor.parent = current
+                    neighbor.h = self.heuristic(neighbor, goal)
+
+                    # Trace robot if not None
+                    if robot is not None:
+                        neighbor.p, neighbor.positioning = self.positioning(matrix, neighbor, robot)
+
+                    # Calculate f()
+                    neighbor.f = neighbor.g + neighbor.h
 
         # No path found ):
         return []
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

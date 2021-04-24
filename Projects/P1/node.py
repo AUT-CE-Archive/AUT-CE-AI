@@ -4,11 +4,15 @@ class Node:
 	def __init__(self, coor, g):
 		''' Constructor '''
 		
-		self.g, self.h, self.f, self.p = g, None, 0, None
+		# Node properties		
 		self.x, self.y = coor
-		self.neighbors = []
 		self.parent = None
-		self.obstacle = False
+
+		# A* properties
+		self.g, self.h, self.f, self.p = g, None, 0, None
+
+		# Gloabal properties
+		self.positioning = []		
 
 
 	def get_coor(self):
