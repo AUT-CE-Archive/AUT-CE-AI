@@ -54,19 +54,26 @@ class Astar:
             parent.positioning.append(robot)
 
         # Get a path
-        path = astar.robot_search(matrix = matrix, start = parent.positioning[-1], goal = dest, butters = []) + [parent.get_coor()]
-        path += [parent.get_coor()]     # Add the parent node which robot will push
+        # path = astar.robot_search(matrix = matrix, start = parent.positioning[-1], goal = dest, butters = []) + [parent.get_coor()]
+        path = astar.search(
+            matrix = matrix,
+            start = parent.positioning[-1],
+            goal = dest,
+            butters = []
+        )
+        path += [(parent.get_coor(), [])]     # Add the parent node which robot will push
 
         # Calculate the f() of the entire route the robot should move
         f_sum = 0
         for node in path:
+            node = node[0]
             f_sum += graph.graph[node[0]][node[1]].g
 
         # Unreachable goal
         if len(path) == 0:
             return 10000, []
         else:
-            return f_sum, path
+            return f_sum, [node[0] for node in path]
 
 
     def search(self, matrix, start, goal, butters, robot = None):
@@ -147,103 +154,6 @@ class Astar:
 
                     # Calculate f()
                     neighbor.f = neighbor.g + neighbor.h
-
-        # No path found ):
-        return []
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    def robot_search(self, matrix, start, goal, butters):
-
-        butters = butters.copy()
-        graph = Graph(matrix)
-
-        # ONLY IF GOAL IS A BUTTER!
-        if goal in butters:
-            graph.adjust(goal = goal, butters = butters)
-
-        # Convert coordinates to Node objects
-        start = Node(start, 0)
-        goal = Node(goal, 0)
-
-        # Check if start or goal is not obstacles
-        if graph.graph[start.x][start.y].g == -1 or graph.graph[goal.x][goal.y].g == -1:
-            return []
-
-        # Define open & closed sets
-        open_set = [start.get_coor()]
-        closed_set = []
-
-        # While fringe is not empty
-        while open_set:
-
-            # Get node with minimum f()
-            x, y = open_set[0]
-            current = graph.graph[x][y]
-            for node in open_set:
-
-                x, y = node
-                node = graph.graph[x][y]
-                
-                if node.f <= current.f:
-                    current = node
-
-            if current.get_coor() == goal.get_coor():
-
-                # Backtrack the path
-                path = []
-                while current.parent is not None:
-                    path.append(current.get_coor())
-                    current = current.parent
-
-                return [start.get_coor()] + path[::-1]
-
-            # Move current node from open set to closed set
-            open_set.remove(current.get_coor())
-            closed_set.append(current.get_coor())
-
-            # Search for each neighbor
-            neighbors = graph.get_neighbors(current)
-            for neighbor in neighbors:
-
-                x, y = neighbor.get_coor()
-
-                # if neighbor has not already been searched
-                if neighbor.get_coor() not in closed_set:
-
-                    # Calculate g()
-                    g = current.g + graph.graph[x][y].g
-
-                    if neighbor.get_coor() in open_set:
-                        if g < neighbor.g:
-                            neighbor.g = g
-                    else:
-                        neighbor.g = g
-                        open_set.append(neighbor.get_coor())   # Add the neighbor to the frontier
-
-                    # Adjust neighbors' properties                    
-                    neighbor.h = self.heuristic(neighbor, goal)
-                    neighbor.f = neighbor.g + neighbor.h
-                    neighbor.parent = current
 
         # No path found ):
         return []
