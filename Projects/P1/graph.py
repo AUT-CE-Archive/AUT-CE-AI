@@ -13,14 +13,12 @@ class Graph:
 			self.graph.append([Node((i, j), int(col)) for j, col in enumerate(row)])
 
 
-	def adjust(self, goal, butters):
+	def abundant(self, abundants, exceptions):
 		''' Marks other butters as obstacles '''
 
-		# Remove goal from butters list
-		butters.remove(goal)
-
-		for butter in butters:
-			self.graph[butter[0]][butter[1]].g = -1
+		for node in abundants:
+			if exceptions is not None and node not in exceptions:
+				self.graph[node[0]][node[1]].g = -1
 
 
 	def get_neighbors(self, node):

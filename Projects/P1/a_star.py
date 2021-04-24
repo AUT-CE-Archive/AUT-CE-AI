@@ -18,7 +18,7 @@ class Astar:
         return abs(x1 - x2) + abs(y1 - y2)
 
 
-    def positioning(self, matrix, neighbor, robot):
+    def positioning(self, matrix, neighbor, robot, butters):
         ''' Repositions the Robot to push the Butter in desired direction '''
 
         astar = Astar()
@@ -54,12 +54,12 @@ class Astar:
             parent.positioning.append(robot)
 
         # Get a path
-        # path = astar.robot_search(matrix = matrix, start = parent.positioning[-1], goal = dest, butters = []) + [parent.get_coor()]
         path = astar.search(
             matrix = matrix,
             start = parent.positioning[-1],
             goal = dest,
-            butters = []
+            butters = butters,
+            abundants = [parent.get_coor()]
         )
         path += [(parent.get_coor(), [])]     # Add the parent node which robot will push
 
@@ -76,14 +76,18 @@ class Astar:
             return f_sum, [node[0] for node in path]
 
 
-    def search(self, matrix, start, goal, butters, robot = None):
+    def search(self, matrix, start, goal, butters, robot = None, abundants = []):
 
-        butters = butters.copy()
         graph = Graph(matrix)
+
+        if goal == (5, 5):
+            print('X')
 
         # ONLY IF GOAL IS A BUTTER!
         if goal in butters:
-            graph.adjust(goal = goal, butters = butters)
+            graph.abundant(abundants = butters, exceptions = [goal])
+        elif len(abundants) != 0:
+            graph.abundant(abundants = butters + abundants, exceptions = [])
 
         # Convert coordinates to Node objects
         start = Node(start, 0)
@@ -150,7 +154,12 @@ class Astar:
 
                     # Trace robot if not None
                     if robot is not None:
-                        neighbor.p, neighbor.positioning = self.positioning(matrix, neighbor, robot)
+                        neighbor.p, neighbor.positioning = self.positioning(
+                            matrix = matrix,
+                            neighbor = neighbor,
+                            robot = robot,
+                            butters = butters
+                        )
 
                     # Calculate f()
                     neighbor.f = neighbor.g + neighbor.h
