@@ -47,7 +47,8 @@ if __name__ == '__main__':
 		)
 
 		# Save robot's latest location
-		robot = path[-2][0]
+		if len(path) != 0:
+			robot = path[-2][0]
 
 		# Remove the butter and goal
 		butters.remove(pair[0])

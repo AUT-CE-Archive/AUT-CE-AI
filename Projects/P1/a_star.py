@@ -144,6 +144,7 @@ class Astar:
 
                         if len(neighbor.positioning) == 1:
                             neighbor.p = math.inf       # Infinity
+                            open_set.remove(neighbor.get_coor())
 
                     # Adjust neighbors' properties
                     neighbor.h = self.heuristic(neighbor, goal)
