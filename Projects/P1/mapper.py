@@ -24,9 +24,10 @@ def get_routes(matrix, butters, goals):
 			if (best_route is None) or (len(path) < len(best_route)):
 				best_route = path
 
-		# Add the route to the list, remove the goal as it has been reached
-		routes.append((butter, best_route[-1][0]))
-		goals.remove(best_route[-1][0])
+		# Add the route to the list, remove the goal as it has been reached only when reachable!
+		if len(best_route) != 0:
+			routes.append((butter, best_route[-1][0]))
+			goals.remove(best_route[-1][0])
 
 	return routes
 
