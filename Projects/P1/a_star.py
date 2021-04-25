@@ -1,5 +1,7 @@
+# imports
 from node import Node
 from graph import Graph
+import math
 
 class Astar:
     ''' A* Object '''
@@ -36,17 +38,11 @@ class Astar:
         else:                   # Vertical
             dest = (parent.x + 1, parent.y) if (delta_x < 0) else (parent.x - 1, parent.y)
 
-        if dest == (2, 7):
-            print('X')
-        if neighbor.get_coor() == (3, 8):
-            print('XXX')
-
-
         # If no previous positioning is available, then robot has not moved
         if len(parent.positioning) == 0:
             parent.positioning.append(robot)
 
-        # Remove initial target butter location        
+        # Remove initial target butter location (IDK but it works)
         for node in parent.positioning:
             try: butters.remove(node)
             except: pass
@@ -134,10 +130,8 @@ class Astar:
                         neighbor.g = g
                         open_set.append(neighbor.get_coor())   # Add the neighbor to the frontier
 
-                    # Adjust neighbors' properties
-                    neighbor.parent = current
-                    neighbor.h = self.heuristic(neighbor, goal)
-                    neighbor.f = neighbor.g + neighbor.h                    
+                    # Set parent                    
+                    neighbor.parent = current                
 
                     # Trace robot if not None
                     if robot is not None:
@@ -146,7 +140,14 @@ class Astar:
                             neighbor = neighbor,
                             robot = robot,
                             butters = butters
-                        )                    
+                        )
+
+                        if len(neighbor.positioning) == 1:
+                            neighbor.p = math.inf       # Infinity
+
+                    # Adjust neighbors' properties
+                    neighbor.h = self.heuristic(neighbor, goal)
+                    neighbor.f = neighbor.g + neighbor.h + neighbor.p
 
         # No path found ):
         return []

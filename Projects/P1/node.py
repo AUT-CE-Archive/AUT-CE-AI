@@ -9,7 +9,7 @@ class Node:
 		self.parent = None
 
 		# A* properties
-		self.g, self.h, self.f, self.p = g, None, 0, None
+		self.g, self.h, self.f, self.p = g, None, 0, 0
 
 		# Gloabal properties
 		self.positioning = []		
