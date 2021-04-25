@@ -1,5 +1,6 @@
 # Imports
 from mapper import *
+import gui
 
 
 # Driver function
@@ -13,7 +14,7 @@ if __name__ == '__main__':
 		['1', '1', '1', '1', '2', '2', '1', '1', '1', '1'],
 		['1', '1', '1', '1', '-1', '1', '-1', '1', '1', '1'],
 	]
-
+ 
 	robot = (0, 0)
 
 	butters = [
@@ -23,6 +24,15 @@ if __name__ == '__main__':
 	goals = [
 		(1, 9)
 	]
+
+	gui.animate(
+		title = 'A* Algorithm',
+		matrix = matrix,
+		butters = butters,
+		goals = goals,
+		robot = robot,
+		routes = []
+	)
 
 
 
@@ -46,7 +56,7 @@ if __name__ == '__main__':
 			robot = robot,
 		)
 
-		# Save robot's latest location
+		# Save robot's latest location if route was completed successfully
 		if len(path) != 0:
 			robot = path[-2][0]
 
