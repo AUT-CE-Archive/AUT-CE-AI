@@ -1,6 +1,7 @@
 # Imports
 from tkinter import *
 
+
 def animate(title, matrix, butters, goals, robot, routes):
 
 	master = Tk()
@@ -33,8 +34,6 @@ def animate(title, matrix, butters, goals, robot, routes):
 				fill = fill,
 				outline = 'black'
 			)
-
-			text = None
 
 			if (i, j) in butters:				# Butter
 				text, fill = 'B', '#ffff00'

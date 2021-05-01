@@ -18,13 +18,15 @@ if __name__ == '__main__':
 	robot = (0, 0)
 
 	butters = [
-		(4, 1)
+		(2, 3), (2, 6)
 	]
 
 	goals = [
-		(1, 9)
+		(5, 5), (3, 8)
 	]
 
+
+	# Animate the routes
 	gui.animate(
 		title = 'A* Algorithm',
 		matrix = matrix,
@@ -33,7 +35,6 @@ if __name__ == '__main__':
 		robot = robot,
 		routes = []
 	)
-
 
 
 	pairs = get_routes (
@@ -46,7 +47,7 @@ if __name__ == '__main__':
 	astar = Astar()
 	for pair in pairs:
 
-		print('Pair:', pair, ':')
+		print('Pair {0}'.format(pair), ':')
 		
 		path = astar.search(
 			matrix = matrix,
@@ -67,4 +68,4 @@ if __name__ == '__main__':
 		for node in path:
 			print(node)
 
-		print('\n' * 2)
+		print()	
