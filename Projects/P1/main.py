@@ -6,27 +6,7 @@ from gui import GUI
 if __name__ == '__main__':
 
 	# Read Map
-	dims, butters, goals, robot, matrix = get_map('map (5).txt')
-
-	# matrix = [
-	# 	['1', '1', '1', '1', '-1', '-1', '1', '1', '1', '1'],
-	# 	['1', '-1', '1', '1', '2', '2', '1', '1', '1', '1'],
-	# 	['-1', '1', '1', '2', '2', '2', '2', '1', '-1', '-1'],
-	# 	['-1', '1', '1', '-1', '-1', '2', '2', '1', '1', '-1'],
-	# 	['1', '1', '1', '1', '2', '2', '1', '1', '1', '1'],
-	# 	['1', '1', '1', '1', '-1', '1', '-1', '1', '1', '1'],
-	# ]
- 
-	# robot = (0, 0)
-
-	# butters = [
-	# 	(2, 3), (2, 6)
-	# ]
-
-	# goals = [
-	# 	(5, 5), (3, 8)
-	# ]	
-
+	dims, butters, goals, robot, matrix = get_map('maps/map (4).txt')
 
 	# Define model
 	# model = Astar()
@@ -50,8 +30,9 @@ if __name__ == '__main__':
 	)
 
 	# Print pairs to route
-	print('Routes:', pairs, end = '\n' * 3)	
+	print('Routes:', pairs, end = '\n' * 3)
 
+	paths = []
 	for pair in pairs:
 
 		# Print current route
@@ -67,6 +48,9 @@ if __name__ == '__main__':
 			model = model,
 		)
 
+		# Save path for animation
+		paths.append(path)
+
 		# update robot's latest location if route was completed successfully
 		if len(path) != 0:
 			robot = path[-2][0]
@@ -76,7 +60,7 @@ if __name__ == '__main__':
 		goals.remove(pair[1])
 
 		if path == []:
-			print('Haha, Impossible ^_^')
+			print('Haha, Gotcha! Impossible ^_^')
 
 		for node in path:
 			print(node)
