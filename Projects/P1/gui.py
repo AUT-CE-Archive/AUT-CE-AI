@@ -1,12 +1,20 @@
 # Imports
 from tkinter import *
+from a_star import Astar
+from ids import IDS
 
 class GUI:
 
-	def __init__(self, title, matrix, butters, goals, robot):
+	def __init__(self, model, matrix, butters, goals, robot):
 		''' Constructor '''
 
-		self.title = title
+		if isinstance(model, Astar):
+			self.title = 'A* algorithm'
+		elif isinstance(model, IDS):
+			self.title = 'IDS algorithm'
+		else:
+			self.title = 'Bidirectional BFS algorithm'
+
 		self.matrix = matrix
 		self.butters = butters
 		self.goals = goals
