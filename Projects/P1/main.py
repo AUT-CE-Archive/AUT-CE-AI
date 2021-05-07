@@ -2,7 +2,6 @@
 from mapper import *
 import gui
 
-
 # Driver function
 if __name__ == '__main__':
 
@@ -19,41 +18,55 @@ if __name__ == '__main__':
 
 	butters = [
 		(2, 3), (2, 6)
+		# (2, 3)
 	]
 
 	goals = [
 		(5, 5), (3, 8)
+		# (3, 6)
 	]
 
 
 	# Animate the routes
-	gui.animate(
-		title = 'A* Algorithm',
-		matrix = matrix,
-		butters = butters,
-		goals = goals,
-		robot = robot,
-		routes = []
-	)
+	# gui.animate(
+	# 	title = 'A* Algorithm',
+	# 	matrix = matrix,
+	# 	butters = butters,
+	# 	goals = goals,
+	# 	robot = robot,
+	# 	routes = []
+	# )
+
+	astar = Astar()
+	ids = IDS()
 
 
 	pairs = get_routes (
 		matrix = matrix,		
 		butters = butters,
-		goals = goals
+		goals = goals,
+		model = astar,
 	)
-	print('Routes:', pairs, end = '\n' * 3)
-	
-	astar = Astar()
+	print('Routes:', pairs, end = '\n' * 3)	
+
 	for pair in pairs:
 
 		print('Pair {0}'.format(pair), ':')
 		
-		path = astar.search(
+		# path = astar.search(
+		# 	matrix = matrix,
+		# 	start = pair[0],
+		# 	goal = pair[1],
+		# 	butters = butters,
+		# 	robot = robot,
+		# )
+
+		path = ids.search(
 			matrix = matrix,
 			start = pair[0],
 			goal = pair[1],
 			butters = butters,
+			all_goals = goals,
 			robot = robot,
 		)
 

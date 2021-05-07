@@ -1,11 +1,11 @@
 # Imports
 from a_star import Astar
+from ids import IDS
 from graph import Graph
 
-def get_routes(matrix, butters, goals):
+def get_routes(matrix, butters, goals, model):
 	''' Returns the routes the robot must go '''
 
-	astar = Astar()
 	routes = []
 	goals = goals.copy()
 	
@@ -14,7 +14,7 @@ def get_routes(matrix, butters, goals):
 		best_route = None
 		for goal in goals:
 
-			path = astar.search(
+			path = model.search(
 				matrix = matrix,
 				start = butter,
 				goal = goal,
