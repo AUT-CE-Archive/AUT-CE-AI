@@ -71,6 +71,8 @@ class Astar:
             graph.abundant(abundants = butters, exceptions = [goal])
         elif len(abundants) != 0:
             graph.abundant(abundants = butters + abundants, exceptions = [])
+        else:
+            graph.abundant(abundants = butters, exceptions = [start])
 
         # Convert coordinates to Node objects
         start = Node(start, 0)
@@ -101,11 +103,11 @@ class Astar:
             if current.get_coor() == goal.get_coor():
 
                 # Backtrack the path
-                path = []
+                path = []                
                 while current.parent is not None:
                     path.append((current.get_coor(), current.positioning))
                     current = current.parent
-
+                    
                 return [(start.get_coor(), start.positioning)] + path[::-1]
 
             # Move current node from open set to closed set
@@ -132,7 +134,7 @@ class Astar:
                         open_set.append(neighbor.get_coor())   # Add the neighbor to the frontier
 
                     # Set parent                    
-                    neighbor.parent = current                
+                    neighbor.parent = current
 
                     # Trace robot if not None
                     if robot is not None:
