@@ -3,7 +3,7 @@ from a_star import Astar
 from ids import IDS
 from graph import Graph
 
-def get_routes(matrix, butters, goals, model):
+def get_pairs(matrix, butters, goals, model):
 	''' Returns the routes the robot must go '''
 
 	routes = []
@@ -19,6 +19,7 @@ def get_routes(matrix, butters, goals, model):
 				start = butter,
 				goal = goal,
 				butters = butters,
+				all_goals = goals,
 			)
 
 			if (best_route is None) or (len(path) < len(best_route)):
@@ -30,3 +31,19 @@ def get_routes(matrix, butters, goals, model):
 			goals.remove(best_route[-1][0])
 
 	return routes
+
+
+def get_route(matrix, pair, butters, goals, robot, model):
+	''' Get's a route given the search model '''
+
+	start = pair[0]
+	goal = pair[1]
+
+	return model.search(
+		matrix = matrix,
+		start = start,
+		goal = goal,
+		butters = butters,
+		all_goals = goals,
+		robot = robot,
+	)

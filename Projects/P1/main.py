@@ -17,13 +17,13 @@ if __name__ == '__main__':
 	robot = (0, 0)
 
 	butters = [
-		(2, 3), (2, 6)
-		# (2, 3)
+		# (2, 3), (2, 6)
+		(2, 3)
 	]
 
 	goals = [
-		(5, 5), (3, 8)
-		# (3, 6)
+		# (5, 5), (3, 8)
+		(3, 6)
 	]
 
 
@@ -37,40 +37,33 @@ if __name__ == '__main__':
 	# 	routes = []
 	# )
 
-	astar = Astar()
-	ids = IDS()
+	model = Astar()
+	# model = IDS()
 
 
-	pairs = get_routes (
-		matrix = matrix,		
+	pairs = get_pairs (
+		matrix = matrix,
 		butters = butters,
 		goals = goals,
-		model = astar,
+		model = model,
 	)
 	print('Routes:', pairs, end = '\n' * 3)	
 
 	for pair in pairs:
 
 		print('Pair {0}'.format(pair), ':')
-		
-		# path = astar.search(
-		# 	matrix = matrix,
-		# 	start = pair[0],
-		# 	goal = pair[1],
-		# 	butters = butters,
-		# 	robot = robot,
-		# )
 
-		path = ids.search(
+		# Get route
+		path = get_route(
 			matrix = matrix,
-			start = pair[0],
-			goal = pair[1],
+			pair = pair,
 			butters = butters,
-			all_goals = goals,
+			goals = goals,
 			robot = robot,
+			model = model,
 		)
 
-		# Save robot's latest location if route was completed successfully
+		# update robot's latest location if route was completed successfully
 		if len(path) != 0:
 			robot = path[-2][0]
 

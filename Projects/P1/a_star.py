@@ -20,7 +20,7 @@ class Astar:
         return abs(x1 - x2) + abs(y1 - y2)
 
 
-    def positioning(self, matrix, neighbor, robot, butters):
+    def positioning(self, matrix, neighbor, robot, butters, all_goals):
         ''' Repositions the Robot to push the Butter in desired direction '''
 
         parent = neighbor.parent
@@ -53,6 +53,7 @@ class Astar:
             start = parent.positioning[-1],
             goal = dest,
             butters = butters,
+            all_goals = all_goals,
             abundants = [parent.get_coor()]
         ) + [(parent.get_coor(), [])]           # Add the parent node which robot will push
 
@@ -60,7 +61,7 @@ class Astar:
         return [] if (len(path) == 0) else [node[0] for node in path]
 
 
-    def search(self, matrix, start, goal, butters, robot = None, abundants = []):
+    def search(self, matrix, start, goal, butters, all_goals, robot = None, abundants = []):
         ''' Core A* algorithm '''
 
         graph = Graph(matrix)
@@ -139,7 +140,8 @@ class Astar:
                             matrix = matrix,
                             neighbor = neighbor,
                             robot = robot,
-                            butters = butters
+                            butters = butters,
+                            all_goals = all_goals,
                         )
 
                         if len(neighbor.positioning) == 1:
