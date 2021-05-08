@@ -5,8 +5,10 @@ import math
 
 
 class AdjacentNode:
+    ''' AdjacentNode object '''
      
     def __init__(self, vertex):
+        ''' Constructor '''
 
         self.vertex = vertex
         self.next = None
@@ -19,47 +21,7 @@ class BI_BFS:
         ''' Constructor '''
         
         # Initialize vertices and graph with vertices
-        self.vertices = 100        
-
-
-    def positioning(self, matrix, neighbor, robot, butters):
-        ''' Repositions the Robot to push the Butter in desired direction '''
-
-        parent = neighbor.parent
-        butters = butters.copy()
-
-        # In case its the starting node
-        if parent is None: return []
-
-        # Calculate deltas
-        delta_x = neighbor.x - parent.x
-        delta_y = neighbor.y - parent.y        
-
-        if delta_x == 0:        # Horizontal
-            dest = (parent.x, parent.y + 1) if (delta_y < 0) else (parent.x, parent.y - 1)        
-        else:                   # Vertical
-            dest = (parent.x + 1, parent.y) if (delta_x < 0) else (parent.x - 1, parent.y)
-
-        # If no previous positioning is available, then robot has not moved
-        if len(parent.positioning) == 0:
-            parent.positioning.append(robot)
-
-        # Remove initial target butter location (IDK but it works)
-        for node in parent.positioning:
-            try: butters.remove(node)
-            except: pass
-
-        # Get a path
-        path = self.search(
-            matrix = matrix,
-            start = parent.positioning[-1],
-            goal = dest,
-            butters = butters,
-            abundants = [parent.get_coor()]
-        ) + [(parent.get_coor(), [])]           # Add the parent node which robot will push
-
-        # Return final results
-        return [] if (len(path) == 0) else [node[0] for node in path]    
+        self.vertices = 100
 
 
     # Function for adding undirected edge
@@ -76,26 +38,25 @@ class BI_BFS:
 
 
     # Function for Breadth First Search
-    def bfs(self, graph, list_edges, queue, visited, parent):
+    def bfs(self, graph, list_edges, queue, visited, parent, robot, all_goals, butters):
         ''' Core BFS algorithm '''
 
         current = queue.pop(0)
         
-        start =Node(current, 0)
-        for i in graph.get_neighbors(start):
-            if (current, i.get_coor()) or (i.get_coor() , current) not in list_edges:
-                self.add_edge(current, i.get_coor())
-                list_edges.append((current, i.get_coor()))
+        start = Node(current, 0)
+        for node in graph.get_neighbors(start):
+            if (current, node.get_coor()) or (node.get_coor() , current) not in list_edges:
+                self.add_edge(current, node.get_coor())
+                list_edges.append((current, node.get_coor()))
 
         connected_node = self.graph[current]
-        for i in graph.get_neighbors(start):
-            vertex = i.get_coor()
+        for node in graph.get_neighbors(start):
+            vertex = node.get_coor()
 
             if vertex not in visited:
                 queue.append(vertex)
                 visited[vertex] = True
                 parent[vertex] = current
-
             else:
                 if not visited[vertex]:
                     queue.append(vertex)
@@ -109,9 +70,9 @@ class BI_BFS:
     def is_intersecting(self):
         
         # Returns intersecting node if present else -1
-        for i in self.src_visited.keys():
-            for j in self.dest_visited.keys():
-                if (i == j): return i
+        for coor_1 in self.src_visited.keys():
+            for coor_2 in self.dest_visited.keys():
+                if (coor_1 == coor_2): return coor_1
                 
         return None
 
@@ -137,7 +98,7 @@ class BI_BFS:
         # Initializing source and destination parent nodes
         self.src_parent, self.dest_parent = {}, {}
 
-        
+
 
         def initialize(self, queue, visited, parent, node, coor):
 
@@ -161,10 +122,36 @@ class BI_BFS:
         while self.src_queue and self.dest_queue:
             
             # BFS in forward direction from Source Vertex
-            self.bfs(graph, list_edges, self.src_queue, self.src_visited, self.src_parent)
+            try:
+                self.bfs(
+                    graph = graph,
+                    list_edges =list_edges,
+                    queue = self.src_queue,
+                    visited = self.src_visited,
+                    parent = self.src_parent,
+                    robot = robot,
+                    all_goals = all_goals,
+                    butters = butters,
+                )
+            except:
+                print('Err - BFS src')
+                return []
 
             # BFS in reverse direction from Destination Vertex
-            self.bfs(graph, list_edges, self.dest_queue, self.dest_visited, self.dest_parent)
+            try:
+                self.bfs(
+                    graph = graph,
+                    list_edges = list_edges,
+                    queue = self.dest_queue,
+                    visited = self.dest_visited,
+                    parent = self.dest_parent,
+                    robot = robot,
+                    all_goals = all_goals,
+                    butters = butters,
+                )
+            except:
+                print('Err - BFS dest')
+                return []
             
             # Check for intersecting vertex
             intersecting_node = self.is_intersecting()
@@ -173,8 +160,8 @@ class BI_BFS:
             if intersecting_node is not None:
 
                 path = [(intersecting_node, [])]
-
                 node = intersecting_node
+
 
                 while node != start.get_coor():
                     path.insert(0, (self.src_parent[node], []))
