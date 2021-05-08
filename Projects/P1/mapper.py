@@ -2,6 +2,8 @@
 from a_star import Astar
 from ids import IDS
 from graph import Graph
+from bi_bfs import BI_BFS
+
 
 def get_pairs(matrix, butters, goals, model):
 	''' Returns the routes the robot must go '''
