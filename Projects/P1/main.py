@@ -6,7 +6,7 @@ from gui import GUI
 if __name__ == '__main__':
 
 	# Read Map
-	dims, butters, goals, robot, matrix = get_map('maps/map (2).txt')
+	dims, butters, goals, robot, matrix = get_map('maps/map (4).txt')
 
 	# Define model
 	# model = Astar()

@@ -19,17 +19,7 @@ class BI_BFS:
         ''' Constructor '''
         
         # Initialize vertices and graph with vertices
-        self.vertices = 100
-        self.graph = {}
-        
-        # Initializing queue for forward and backward search
-        self.src_queue, self.dest_queue = list(), list()
-        
-        # Initializing source and destination visited nodes as False
-        self.src_visited, self.dest_visited = {}, {}
-        
-        # Initializing source and destination parent nodes
-        self.src_parent, self.dest_parent = {}, {}
+        self.vertices = 100        
 
 
     def positioning(self, matrix, neighbor, robot, butters):
@@ -135,6 +125,19 @@ class BI_BFS:
         start = Node(src, 0)
         goal = Node(dest, 0)
         list_edges = []
+
+        self.graph = {}
+        
+        # Initializing queue for forward and backward search
+        self.src_queue, self.dest_queue = list(), list()
+        
+        # Initializing source and destination visited nodes as False
+        self.src_visited, self.dest_visited = {}, {}
+        
+        # Initializing source and destination parent nodes
+        self.src_parent, self.dest_parent = {}, {}
+
+        
 
         def initialize(self, queue, visited, parent, node, coor):
 
