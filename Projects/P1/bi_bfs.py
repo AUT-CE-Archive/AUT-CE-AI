@@ -86,7 +86,7 @@ class BI_BFS:
 
 
     # Function for Breadth First Search
-    def bfs(self, graph, list_edges, queue, visited, parent, direction):
+    def bfs(self, graph, list_edges, queue, visited, parent):
         ''' Core BFS algorithm '''
 
         current = queue.pop(0)
@@ -126,68 +126,6 @@ class BI_BFS:
         return None
 
 
-    # Function for bidirectional searching
-    def bidirectional_search(self, src, dest , graph , list_edges):
-        ''' Core Bi-BFS algorithm '''
-
-        start = Node(src, 0)
-        goal = Node(dest, 0)
-
-        # Append neighbors for source
-        for i in graph.get_neighbors(start):
-            if (src, i.get_coor()) or (i.get_coor() , src)  not in list_edges:
-                self.add_edge(src, i.get_coor())
-                list_edges.append((src, i.get_coor()))
-
-        self.src_queue.append(src)
-        self.src_visited[src] = True
-        self.src_parent[src] = -1
-        
-        # Append neighbors for destination
-        for i in graph.get_neighbors(goal):
-            if (dest, i.get_coor()) or (i.get_coor() , dest)  not in list_edges:
-                self.add_edge(dest, i.get_coor())
-                list_edges.append((dest, i.get_coor()))
-
-        self.dest_queue.append(dest)
-        self.dest_visited[dest] = True
-        self.dest_parent[dest] = -1
-
-        while self.src_queue and self.dest_queue:
-            
-            # BFS in forward direction from Source Vertex
-            self.bfs(graph, list_edges, self.src_queue, self.src_visited, self.src_parent, direction = 'forward')
-
-            # BFS in reverse direction from Destination Vertex
-            self.bfs(graph, list_edges, self.dest_queue, self.dest_visited, self.dest_parent, direction = 'backward')
-            
-            # Check for intersecting vertex
-            intersecting_node = self.is_intersecting()
-            
-            # If intersecting vertex exists then path from source to destination exists
-            if intersecting_node is not None:
-                print(f"Path exists between {src} and {dest}")
-                print(f"Intersection at : {intersecting_node}")
-
-                path = list()
-                path.append(intersecting_node)
-
-                node = intersecting_node
-
-                while node != start.get_coor():
-                    path.insert(0, self.src_parent[node])
-                    node = self.src_parent[node]
-
-                node = intersecting_node
-                while node != goal.get_coor():
-                    path.append(self.dest_parent[node])
-                    node = self.dest_parent[node]
-
-                return path
-
-        return []
-
-
     def search(self, matrix, start, goal, butters, all_goals, robot = None, abundants = []):
         ''' Core Bi-BFS algorithm '''
 
@@ -220,10 +158,10 @@ class BI_BFS:
         while self.src_queue and self.dest_queue:
             
             # BFS in forward direction from Source Vertex
-            self.bfs(graph, list_edges, self.src_queue, self.src_visited, self.src_parent, direction = 'forward')
+            self.bfs(graph, list_edges, self.src_queue, self.src_visited, self.src_parent)
 
             # BFS in reverse direction from Destination Vertex
-            self.bfs(graph, list_edges, self.dest_queue, self.dest_visited, self.dest_parent, direction = 'backward')
+            self.bfs(graph, list_edges, self.dest_queue, self.dest_visited, self.dest_parent)
             
             # Check for intersecting vertex
             intersecting_node = self.is_intersecting()
@@ -231,8 +169,7 @@ class BI_BFS:
             # If intersecting vertex exists then path from source to destination exists
             if intersecting_node is not None:
 
-                path = list()
-                path.append(intersecting_node)
+                path = [(intersecting_node, [])]
 
                 node = intersecting_node
 

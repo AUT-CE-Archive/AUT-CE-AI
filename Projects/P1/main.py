@@ -6,7 +6,7 @@ from gui import GUI
 if __name__ == '__main__':
 
 	# Read Map
-	dims, butters, goals, robot, matrix = get_map('maps/map (1).txt')
+	dims, butters, goals, robot, matrix = get_map('maps/map (2).txt')
 
 	# Define model
 	# model = Astar()
@@ -69,5 +69,4 @@ if __name__ == '__main__':
 
 
 	# Animate GUI
-	print(paths)
 	gui.animate()
