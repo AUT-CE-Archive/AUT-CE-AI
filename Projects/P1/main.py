@@ -10,11 +10,11 @@ if __name__ == '__main__':
 
 	# Define model
 	# model = Astar()
-	# model = IDS()
-	model = BI_BFS()
+	model = IDS()
+	# model = BI_BFS()
 
-	view = 'basic'
-	# view = 'extended'
+	# view = 'basic'
+	view = 'extended'
 
 	# Build GUI
 	gui = GUI(
@@ -34,7 +34,7 @@ if __name__ == '__main__':
 	)
 
 	# Print pairs to route
-	print('Routes:', pairs, end = '\n' * 3)
+	print('Routes:', pairs, end = '\n' * 2)
 
 	paths = []
 	for pair in pairs:
@@ -70,4 +70,4 @@ if __name__ == '__main__':
 
 
 	# Animate GUI
-	gui.animate()
+	gui.animate(routes = paths)

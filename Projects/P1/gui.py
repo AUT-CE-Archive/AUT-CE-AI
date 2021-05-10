@@ -11,22 +11,26 @@ class Plate:
 		self.canvas = canvas
 		self.x, self.y = x, y
 		self.size = size
+		self.weight = weight
 
-		self.fill = None
-
-		if weight == 1:
-			self.fill = '#833d0b'
-		elif weight == 2:
-			self.fill = '#f94141'
-		else:
-			self.fill = '#4d2307'
+		self.fill = None		
 		
 		self.draw()
 		self.canvas.pack()
 
 
-	def draw(self):
+	def draw(self, fill = None):
 		''' Draws the object '''
+
+		if fill is None:
+			if self.weight == 1:
+				self.fill = '#833d0b'
+			elif self.weight == 2:
+				self.fill = '#f94141'
+			else:
+				self.fill = '#4d2307'
+		else:
+			self.fill = fill
 
 		self.canvas.create_rectangle(			
 			self.x,
@@ -51,14 +55,14 @@ class Item:
 		self.canvas.pack()
 
 
-	def draw(self):
+	def draw(self, fill = '#ffff00'):
 		''' Draws the object '''
 
 		self.canvas.create_text(
 			self.x,
 			self.y,
 			text = self.text,
-			fill = '#ffff00',
+			fill = fill,
 			font = ('freemono', 10, 'bold')
 		)
 
@@ -77,6 +81,7 @@ class GUI:
 			self.title = 'Bidirectional BFS algorithm'
 
 		# Initialize
+		self.model = model
 		self.matrix, self.butters, self.goals, self.robot = matrix, butters, goals, robot
 		self.plates, self.items = [], []
 
@@ -91,7 +96,11 @@ class GUI:
 			master = self.master,
 			width = len(self.matrix[0]) * self.size,
 			height = len(self.matrix) * self.size
-		)
+		)		
+
+
+	def animate(self, routes):
+		''' Animates the GUI '''
 
 		for i, row in enumerate(self.matrix):
 			for j, col in enumerate(row):
@@ -106,6 +115,25 @@ class GUI:
 				)
 				plate.draw()
 				self.plates.append(plate)
+
+
+		robot_route = set()
+		for pair, route in routes:
+			for butter_loc, robot_path in route:
+				for node in robot_path:
+					robot_place = Plate(
+						canvas = self.canvas,
+						x = self.size * node[0],
+						y = self.size * node[1],
+						size = self.size,
+						weight = self.matrix[node[0]][node[1]]
+					)
+					robot_place.draw(fill = '#4ae856')
+					self.items.append(robot_place)
+
+
+		for i, row in enumerate(self.matrix):
+			for j, col in enumerate(row):
 
 				# Butters
 				if (i, j) in self.butters:
@@ -124,19 +152,6 @@ class GUI:
 				if (i, j) == self.robot:
 					robot = Item(canvas = self.canvas, x = self.size * j + (self.size // 2), y = self.size * i + (self.size // 2), text = 'R')
 					robot.draw()
-					self.items.append(robot)
-
-
-	def draw(self):
-		''' Draws the interface '''
-
-		self.canvas.move(self.items[0], 5, 5)
-		# self.items[0].x + 10, self.items[0].y + 10
-		self.canvas.after(10, self.draw)
-
-
-	def animate(self):
-		''' Animates the GUI '''		
-
-		self.draw()
+					self.items.append(robot)		
+		
 		mainloop()
