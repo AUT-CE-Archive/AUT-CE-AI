@@ -20,7 +20,7 @@ class Astar:
         return abs(x1 - x2) + abs(y1 - y2)
 
 
-    def positioning(self, matrix, neighbor, robot, butters):
+    def positioning(self, matrix, neighbor, robot, butters, all_goals):
         ''' Repositions the Robot to push the Butter in desired direction '''
 
         parent = neighbor.parent
@@ -53,6 +53,7 @@ class Astar:
             start = parent.positioning[-1],
             goal = dest,
             butters = butters,
+            all_goals = all_goals,
             abundants = [parent.get_coor()]
         ) + [(parent.get_coor(), [])]           # Add the parent node which robot will push
 
@@ -60,7 +61,7 @@ class Astar:
         return [] if (len(path) == 0) else [node[0] for node in path]
 
 
-    def search(self, matrix, start, goal, butters, robot = None, abundants = []):
+    def search(self, matrix, start, goal, butters, all_goals, robot = None, abundants = []):
         ''' Core A* algorithm '''
 
         graph = Graph(matrix)
@@ -70,6 +71,8 @@ class Astar:
             graph.abundant(abundants = butters, exceptions = [goal])
         elif len(abundants) != 0:
             graph.abundant(abundants = butters + abundants, exceptions = [])
+        else:
+            graph.abundant(abundants = butters, exceptions = [start])
 
         # Convert coordinates to Node objects
         start = Node(start, 0)
@@ -100,11 +103,11 @@ class Astar:
             if current.get_coor() == goal.get_coor():
 
                 # Backtrack the path
-                path = []
+                path = []                
                 while current.parent is not None:
                     path.append((current.get_coor(), current.positioning))
                     current = current.parent
-
+                    
                 return [(start.get_coor(), start.positioning)] + path[::-1]
 
             # Move current node from open set to closed set
@@ -131,7 +134,7 @@ class Astar:
                         open_set.append(neighbor.get_coor())   # Add the neighbor to the frontier
 
                     # Set parent                    
-                    neighbor.parent = current                
+                    neighbor.parent = current
 
                     # Trace robot if not None
                     if robot is not None:
@@ -139,7 +142,8 @@ class Astar:
                             matrix = matrix,
                             neighbor = neighbor,
                             robot = robot,
-                            butters = butters
+                            butters = butters,
+                            all_goals = all_goals,
                         )
 
                         if len(neighbor.positioning) == 1:

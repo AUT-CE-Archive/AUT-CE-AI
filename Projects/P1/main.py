@@ -1,63 +1,58 @@
 # Imports
 from mapper import *
-import gui
-
+from gui import GUI
 
 # Driver function
 if __name__ == '__main__':
 
-	matrix = [
-		['1', '1', '1', '1', '-1', '-1', '1', '1', '1', '1'],
-		['1', '-1', '1', '1', '2', '2', '1', '1', '1', '1'],
-		['-1', '1', '1', '2', '2', '2', '2', '1', '-1', '-1'],
-		['-1', '1', '1', '-1', '-1', '2', '2', '1', '1', '-1'],
-		['1', '1', '1', '1', '2', '2', '1', '1', '1', '1'],
-		['1', '1', '1', '1', '-1', '1', '-1', '1', '1', '1'],
-	]
- 
-	robot = (0, 0)
+	# Read Map
+	dims, butters, goals, robot, matrix = get_map('maps/map (1).txt')
 
-	butters = [
-		(2, 3), (2, 6)
-	]
+	# Define model
+	# model = Astar()
+	# model = IDS()
+	model = BI_BFS()
 
-	goals = [
-		(5, 5), (3, 8)
-	]
+	# Build GUI
+	gui = GUI(
+		model = model,
+		matrix = matrix.copy(),
+		butters = butters.copy(),
+		goals = goals.copy(),
+		robot = robot,
+	)
 
-
-	# Animate the routes
-	gui.animate(
-		title = 'A* Algorithm',
+	# Get pairs
+	pairs = get_pairs (
 		matrix = matrix,
 		butters = butters,
 		goals = goals,
-		robot = robot,
-		routes = []
+		model = model,
 	)
 
-
-	pairs = get_routes (
-		matrix = matrix,		
-		butters = butters,
-		goals = goals
-	)
+	# Print pairs to route
 	print('Routes:', pairs, end = '\n' * 3)
-	
-	astar = Astar()
+
+	paths = []
 	for pair in pairs:
 
+		# Print current route
 		print('Pair {0}'.format(pair), ':')
-		
-		path = astar.search(
+
+		# Get route
+		path = get_route(
 			matrix = matrix,
-			start = pair[0],
-			goal = pair[1],
+			pair = pair,
 			butters = butters,
+			goals = goals,
 			robot = robot,
+			model = model,
 		)
 
-		# Save robot's latest location if route was completed successfully
+		# Save path for animation
+		paths.append((pair, path))
+
+		# update robot's latest location if route was completed successfully
 		if len(path) != 0:
 			robot = path[-2][0]
 
@@ -65,7 +60,14 @@ if __name__ == '__main__':
 		butters.remove(pair[0])
 		goals.remove(pair[1])
 
+		if path == []: print('Haha, Gotcha! Impossible ^_^')
+
 		for node in path:
 			print(node)
 
-		print()	
+		print()
+
+
+	# Animate GUI
+	print(paths)
+	gui.animate()
