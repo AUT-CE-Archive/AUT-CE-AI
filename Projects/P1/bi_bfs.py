@@ -2,6 +2,7 @@
 from node import Node
 from graph import Graph
 import math
+from a_star import Astar
 
 
 class AdjacentNode:
@@ -23,6 +24,52 @@ class BI_BFS:
         # Initialize vertices and graph with vertices
         self.vertices = 100
 
+        # Dictionaries for paths of robot
+        self.src_robot_paths, self.dest_robot_paths = {}, {}
+
+
+    def positioning(self, matrix, neighbor, robot, butters, all_goals, parents, robot_paths):
+        ''' Repositions the Robot to push the Butter in desired direction '''
+
+        parent = parents[neighbor.get_coor()]
+        parent = Node(parent, matrix[parent[0]][parent[1]])
+        butters = butters.copy()
+
+        # In case its the starting node
+        if parent == -1: return []
+
+        # Calculate deltas
+        delta_x = neighbor.x - parent.x
+        delta_y = neighbor.y - parent.y        
+
+        if delta_x == 0:        # Horizontal
+            dest = (parent.x, parent.y + 1) if (delta_y < 0) else (parent.x, parent.y - 1)        
+        else:                   # Vertical
+            dest = (parent.x + 1, parent.y) if (delta_x < 0) else (parent.x - 1, parent.y)
+
+        # If no previous positioning is available, then robot has not moved
+        if parent.get_coor() not in robot_paths:
+            robot_paths[parent.get_coor()] = [robot]
+
+        # Remove initial target butter location (IDK but it works)
+        for node in robot_paths[parent.get_coor()]:
+            try: butters.remove(node)
+            except: pass
+
+        # Get a path
+        astar = Astar()
+        path = astar.search(
+            matrix = matrix,
+            start = robot_paths[parent.get_coor()][-1],
+            goal = dest,
+            butters = butters,
+            all_goals = all_goals,
+            abundants = [parent.get_coor()]
+        ) + [(parent.get_coor(), [])]           # Add the parent node which robot will push
+
+        # Return final results
+        return [] if (len(path) == 0) else [node[0] for node in path]
+
 
     # Function for adding undirected edge
     def add_edge(self, src, dest):
@@ -32,36 +79,51 @@ class BI_BFS:
                 
         node2 = AdjacentNode(src)
         self.graph[src] = node2
-        
+
         node2.next = self.graph[dest]
         node1.next = self.graph[src]
 
 
     # Function for Breadth First Search
-    def bfs(self, graph, list_edges, queue, visited, parent, robot, all_goals, butters):
+    def bfs(self, graph, list_edges, queue, visited, parents, robot, all_goals, butters, robot_paths):
         ''' Core BFS algorithm '''
 
-        current = queue.pop(0)
+        current = queue.pop(0)  # Get current node
         
         start = Node(current, 0)
-        for node in graph.get_neighbors(start):
+        for node in graph.get_neighbors(start, shuffle = False):
             if (current, node.get_coor()) or (node.get_coor() , current) not in list_edges:
                 self.add_edge(current, node.get_coor())
                 list_edges.append((current, node.get_coor()))
 
+        # Traverse neighbors
         connected_node = self.graph[current]
-        for node in graph.get_neighbors(start):
+        for node in graph.get_neighbors(start, shuffle = False):            
             vertex = node.get_coor()
 
             if vertex not in visited:
                 queue.append(vertex)
                 visited[vertex] = True
-                parent[vertex] = current
+                parents[vertex] = current
             else:
                 if not visited[vertex]:
                     queue.append(vertex)
                     visited[vertex] = True
-                    parent[vertex] = current
+                    parents[vertex] = current
+
+            if robot is not None:
+                robot_path = self.positioning(
+                    matrix = graph.matrix,
+                    neighbor = node,
+                    robot = robot,
+                    butters = butters,
+                    all_goals = all_goals,
+                    parents = parents,
+                    robot_paths = robot_paths,
+                )
+                # print(start.get_coor(), node.get_coor(), robot_path)
+                robot_paths[node.get_coor()] = robot_path
+                # print('SRC', robot_path)
 
             connected_node = connected_node.next
 
@@ -82,12 +144,20 @@ class BI_BFS:
 
         src, dest = start, goal
 
-        graph = Graph(matrix)        
+        graph = Graph(matrix)
         start = Node(src, 0)
         goal = Node(dest, 0)
         list_edges = []
 
         self.graph = {}
+
+        # ONLY IF GOAL IS A BUTTER!
+        if goal in butters:
+            graph.abundant(abundants = butters, exceptions = [goal])
+        elif len(abundants) != 0:
+            graph.abundant(abundants = butters + abundants, exceptions = [])
+        else:
+            graph.abundant(abundants = butters, exceptions = [start])
         
         # Initializing queue for forward and backward search
         self.src_queue, self.dest_queue = list(), list()
@@ -96,8 +166,7 @@ class BI_BFS:
         self.src_visited, self.dest_visited = {}, {}
         
         # Initializing source and destination parent nodes
-        self.src_parent, self.dest_parent = {}, {}
-
+        self.src_parents, self.dest_parents = {}, {}        
 
 
         def initialize(self, queue, visited, parent, node, coor):
@@ -113,10 +182,10 @@ class BI_BFS:
 
 
         # Initialzie start
-        initialize(self, self.src_queue, self.src_visited, self.src_parent, start, src)
+        initialize(self, self.src_queue, self.src_visited, self.src_parents, start, src)
 
         # Initialzie goal
-        initialize(self, self.dest_queue, self.dest_visited, self.dest_parent, goal, dest)
+        initialize(self, self.dest_queue, self.dest_visited, self.dest_parents, goal, dest)
         
 
         while self.src_queue and self.dest_queue:
@@ -125,13 +194,14 @@ class BI_BFS:
             try:
                 self.bfs(
                     graph = graph,
-                    list_edges =list_edges,
+                    list_edges = list_edges,
                     queue = self.src_queue,
                     visited = self.src_visited,
-                    parent = self.src_parent,
+                    parents = self.src_parents,
                     robot = robot,
                     all_goals = all_goals,
                     butters = butters,
+                    robot_paths = self.src_robot_paths,
                 )
             except:
                 print('Err - BFS src')
@@ -144,10 +214,11 @@ class BI_BFS:
                     list_edges = list_edges,
                     queue = self.dest_queue,
                     visited = self.dest_visited,
-                    parent = self.dest_parent,
-                    robot = robot,
+                    parents = self.dest_parents,
+                    robot = None,
                     all_goals = all_goals,
                     butters = butters,
+                    robot_paths = self.dest_robot_paths,
                 )
             except:
                 print('Err - BFS dest')
@@ -162,15 +233,22 @@ class BI_BFS:
                 path = [(intersecting_node, [])]
                 node = intersecting_node
 
-
                 while node != start.get_coor():
-                    path.insert(0, (self.src_parent[node], []))
-                    node = self.src_parent[node]
+                    robot_path = []
+                    if robot is not None:
+                        robot_path = self.src_robot_paths[node]
+
+                    path.insert(0, (self.src_parents[node], robot_path))
+                    node = self.src_parents[node]
 
                 node = intersecting_node
                 while node != goal.get_coor():
-                    path.append((self.dest_parent[node], []))
-                    node = self.dest_parent[node]
+                    path.append((self.dest_parents[node], []))
+                    node = self.dest_parents[node]
+
+                # ONLY FOR BI-BFS! Causes performace issues but it's a good fix for now
+                if len(path) == 1:
+                    path = path + path
 
                 return path
 
