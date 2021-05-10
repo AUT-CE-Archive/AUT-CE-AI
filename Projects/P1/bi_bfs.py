@@ -32,11 +32,12 @@ class BI_BFS:
         ''' Repositions the Robot to push the Butter in desired direction '''
 
         parent = parents[neighbor.get_coor()]
-        parent = Node(parent, matrix[parent[0]][parent[1]])
-        butters = butters.copy()
 
         # In case its the starting node
-        if parent == -1: return []
+        # if parent == -1: return []
+
+        parent = Node(parent, matrix[parent[0]][parent[1]])
+        butters = butters.copy()        
 
         # Calculate deltas
         delta_x = neighbor.x - parent.x
@@ -45,7 +46,7 @@ class BI_BFS:
         if delta_x == 0:        # Horizontal
             dest = (parent.x, parent.y + 1) if (delta_y < 0) else (parent.x, parent.y - 1)        
         else:                   # Vertical
-            dest = (parent.x + 1, parent.y) if (delta_x < 0) else (parent.x - 1, parent.y)
+            dest = (parent.x + 1, parent.y) if (delta_x < 0) else (parent.x - 1, parent.y)        
 
         # If no previous positioning is available, then robot has not moved
         if parent.get_coor() not in robot_paths:
@@ -121,9 +122,12 @@ class BI_BFS:
                     parents = parents,
                     robot_paths = robot_paths,
                 )
-                # print(start.get_coor(), node.get_coor(), robot_path)
+
+                if len(robot_path) == 1:
+                    continue
+
+                print(start.get_coor(), node.get_coor(), robot_path)
                 robot_paths[node.get_coor()] = robot_path
-                # print('SRC', robot_path)
 
             connected_node = connected_node.next
 
@@ -208,47 +212,49 @@ class BI_BFS:
                 return []
 
             # BFS in reverse direction from Destination Vertex
-            try:
-                self.bfs(
-                    graph = graph,
-                    list_edges = list_edges,
-                    queue = self.dest_queue,
-                    visited = self.dest_visited,
-                    parents = self.dest_parents,
-                    robot = None,
-                    all_goals = all_goals,
-                    butters = butters,
-                    robot_paths = self.dest_robot_paths,
-                )
-            except:
-                print('Err - BFS dest')
-                return []
+            # try:
+            self.bfs(
+                graph = graph,
+                list_edges = list_edges,
+                queue = self.dest_queue,
+                visited = self.dest_visited,
+                parents = self.dest_parents,
+                robot = None,
+                all_goals = all_goals,
+                butters = butters,
+                robot_paths = self.dest_robot_paths,
+            )
+            # except:
+            #     print('Err - BFS dest')
+            #     return []
             
             # Check for intersecting vertex
             intersecting_node = self.is_intersecting()
-            
+
             # If intersecting vertex exists then path from source to destination exists
             if intersecting_node is not None:
 
-                path = [(intersecting_node, [])]
+                path = []
                 node = intersecting_node
 
                 while node != start.get_coor():
                     robot_path = []
                     if robot is not None:
-                        robot_path = self.src_robot_paths[node]
+                        if node in self.src_robot_paths:
+                            robot_path = self.src_robot_paths[node]
+                        else:
+                            return []
 
-                    path.insert(0, (self.src_parents[node], robot_path))
+                    path.insert(0, (node, robot_path))
                     node = self.src_parents[node]
 
+                # Insert initial position
+                path.insert(0, (start.get_coor(), []))
+
                 node = intersecting_node
-                while node != goal.get_coor():
+                while node != goal.get_coor():                    
                     path.append((self.dest_parents[node], []))
                     node = self.dest_parents[node]
-
-                # ONLY FOR BI-BFS! Causes performace issues but it's a good fix for now
-                if len(path) == 1:
-                    path = path + path
 
                 return path
 

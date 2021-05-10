@@ -84,3 +84,56 @@ def get_map(file_path):
 
 
 	return dims, butters, goals, robot, matrix
+
+
+def short_view(route, matrix):
+	''' Prints a short view of the route '''
+
+	robot_route = []
+	robot_dir = []
+	cost = 0
+
+	for butter_loc, robot_path in route:
+		for node in robot_path:
+			robot_route.append(node)
+			cost += matrix[node[0]][node[1]]
+	
+	dir_map = {
+		(1, 0): 'D',
+		(-1, 0): 'U',
+		(0, 1): 'R',
+		(0, -1): 'L',
+		(0, 0): ''
+	}
+
+	for i in range(1, len(robot_route)):
+		prev = robot_route[i - 1]
+		curr = robot_route[i]
+
+		delta_x = curr[0] - prev[0]
+		delta_y = curr[1] - prev[1]		
+
+		_dir = dir_map[(delta_x, delta_y)]
+		robot_dir.append(_dir)
+
+	print(' '.join([_dir for _dir in robot_dir if _dir != '']))
+	print(cost)
+	print(len(robot_dir))
+
+
+def extended_view(route, matrix):
+	''' Prints an extended view of the route '''
+
+	print('Butter Loc\t|\t Robot Path')
+	for butter_loc, robot_path in route:
+		print(butter_loc, '\t\t|\t', robot_path)
+
+
+def view_route(route, matrix, type):
+	''' Views the route '''
+
+	if type == 'basic':
+		short_view(route = route, matrix = matrix)
+	else:
+		extended_view(route = route, matrix = matrix)
+	print()
