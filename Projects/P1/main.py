@@ -1,59 +1,61 @@
 # Imports
-#from mapper import *
-import gui
-from a_star import IDS
+from mapper import *
+from gui import GUI
 
 # Driver function
 if __name__ == '__main__':
 
-	matrix = [
-		['1', '1', '1', '1', '-1', '-1', '1', '1', '1', '1'],
-		['1', '-1', '1', '1', '2', '2', '1', '1', '1', '1'],
-		['-1', '1', '1', '2', '2', '2', '2', '1', '-1', '-1'],
-		['-1', '1', '1', '-1', '-1', '2', '2', '1', '1', '-1'],
-		['1', '1', '1', '1', '2', '2', '1', '1', '1', '1'],
-		['1', '1', '1', '1', '-1', '1', '-1', '1', '1', '1'],
-	]
- 
-	robot = (0, 0)
+	# Read Map
+	dims, butters, goals, robot, matrix = get_map('maps/map (1).txt')
 
-	butters = [
-		(2, 3), (2, 6)
-	]
+	# Define model
+	# model = Astar()
+	model = IDS()
+	# model = BI_BFS()
 
-	goals = [
-		(5, 5), (3, 8)
-	]
+	# view = 'basic'
+	view = 'extended'
 
+	# Build GUI
+	gui = GUI(
+		model = model,
+		matrix = matrix.copy(),
+		butters = butters.copy(),
+		goals = goals.copy(),
+		robot = robot,
+	)
 
-	# Animate the routes
-	# 
+	# Get pairs
+	pairs = get_pairs (
+		matrix = matrix,
+		butters = butters,
+		goals = goals,
+		model = model,
+	)
 
+	# Print pairs to route
+	print('Routes:', pairs, end = '\n' * 2)
 
-	#pairs = get_routes (
-	#	matrix = matrix,		
-	#	butters = butters,
-	#	goals = goals
-	#)
-	pairs = [((2,3) , (3,5))]
-	print('Routes:', pairs, end = '\n' * 3)
-	
-	astar = IDS()
+	paths = []
 	for pair in pairs:
 
-		print('Pair {0}'.format(pair), ':')
-		
-		path = astar.search3(
+		# Print current route
+		print(f'From {pair[0]} to {pair[1]}:')
+
+		# Get route
+		path = get_route(
 			matrix = matrix,
-			start = pair[0],
-			goal = pair[1],
+			pair = pair,
 			butters = butters,
+			goals = goals,
 			robot = robot,
+			model = model,
 		)
 
-		
+		# Save path for animation
+		paths.append((pair, path))
 
-		# Save robot's latest location if route was completed successfully
+		# update robot's latest location if route was completed successfully
 		if len(path) != 0:
 			robot = path[-2][0]
 
@@ -61,7 +63,11 @@ if __name__ == '__main__':
 		butters.remove(pair[0])
 		goals.remove(pair[1])
 
-		for node in path:
-			print(node)
+		if path == []:
+			print('Can’t pass the butter ^_^')
+		else:
+			view_route(route = path, matrix = matrix, type = view)
 
-		print()	
+
+	# Animate GUI
+	gui.animate(routes = paths)
