@@ -117,19 +117,19 @@ class GUI:
 				self.plates.append(plate)
 
 
-		robot_route = set()
-		for pair, route in routes:
-			for butter_loc, robot_path in route:
-				for node in robot_path:
-					robot_place = Plate(
-						canvas = self.canvas,
-						x = self.size * node[0],
-						y = self.size * node[1],
-						size = self.size,
-						weight = self.matrix[node[0]][node[1]]
-					)
-					robot_place.draw(fill = '#4ae856')
-					self.items.append(robot_place)
+		# robot_route = set()
+		# for pair, route in routes:
+		# 	for butter_loc, robot_path in route:
+		# 		for node in robot_path:
+		# 			robot_place = Plate(
+		# 				canvas = self.canvas,
+		# 				x = self.size * node[0],
+		# 				y = self.size * node[1],
+		# 				size = self.size,
+		# 				weight = self.matrix[node[0]][node[1]]
+		# 			)
+		# 			robot_place.draw(fill = '#4ae856')
+		# 			self.items.append(robot_place)
 
 
 		for i, row in enumerate(self.matrix):

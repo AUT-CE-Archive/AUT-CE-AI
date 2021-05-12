@@ -126,7 +126,7 @@ class BI_BFS:
                 if len(robot_path) == 1:
                     continue
 
-                print(start.get_coor(), node.get_coor(), robot_path)
+                # print(start.get_coor(), node.get_coor(), robot_path)
                 robot_paths[node.get_coor()] = robot_path
 
             connected_node = connected_node.next
@@ -195,21 +195,21 @@ class BI_BFS:
         while self.src_queue and self.dest_queue:
             
             # BFS in forward direction from Source Vertex
-            try:
-                self.bfs(
-                    graph = graph,
-                    list_edges = list_edges,
-                    queue = self.src_queue,
-                    visited = self.src_visited,
-                    parents = self.src_parents,
-                    robot = robot,
-                    all_goals = all_goals,
-                    butters = butters,
-                    robot_paths = self.src_robot_paths,
-                )
-            except:
-                print('Err - BFS src')
-                return []
+            # try:
+            self.bfs(
+                graph = graph,
+                list_edges = list_edges,
+                queue = self.src_queue,
+                visited = self.src_visited,
+                parents = self.src_parents,
+                robot = robot,
+                all_goals = all_goals,
+                butters = butters,
+                robot_paths = self.src_robot_paths,
+            )
+            # except:
+            #     print('Err - BFS src')
+            #     return []
 
             # BFS in reverse direction from Destination Vertex
             # try:
@@ -219,10 +219,11 @@ class BI_BFS:
                 queue = self.dest_queue,
                 visited = self.dest_visited,
                 parents = self.dest_parents,
-                robot = None,
+                robot = goal,
                 all_goals = all_goals,
                 butters = butters,
                 robot_paths = self.dest_robot_paths,
+                reverse = True,
             )
             # except:
             #     print('Err - BFS dest')

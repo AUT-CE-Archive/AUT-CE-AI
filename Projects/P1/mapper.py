@@ -93,10 +93,14 @@ def short_view(route, matrix):
 	robot_dir = []
 	cost = 0
 
+	last_node = None
 	for butter_loc, robot_path in route:
 		for node in robot_path:
-			robot_route.append(node)
-			cost += matrix[node[0]][node[1]]
+			robot_route.append(node)			
+
+			if node != last_node:
+				cost += matrix[node[0]][node[1]]
+			last_node = node
 	
 	dir_map = {
 		(1, 0): 'D',
