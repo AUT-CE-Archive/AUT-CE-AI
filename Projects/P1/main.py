@@ -9,8 +9,8 @@ if __name__ == '__main__':
 	dims, butters, goals, robot, matrix = get_map('maps/map (1).txt')
 
 	# Define model
-	# model = Astar()
-	model = IDS()
+	model = Astar()
+	# model = IDS()
 	# model = BI_BFS()
 
 	# view = 'basic'

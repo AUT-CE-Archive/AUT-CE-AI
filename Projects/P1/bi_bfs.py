@@ -4,7 +4,6 @@ from graph import Graph
 import math
 from a_star import Astar
 
-
 class AdjacentNode:
     ''' AdjacentNode object '''
      
@@ -59,6 +58,7 @@ class BI_BFS:
 
         # Get a path
         astar = Astar()
+        # path = self.search(
         path = astar.search(
             matrix = matrix,
             start = robot_paths[parent.get_coor()][-1],
@@ -86,7 +86,7 @@ class BI_BFS:
 
 
     # Function for Breadth First Search
-    def bfs(self, graph, list_edges, queue, visited, parents, robot, all_goals, butters, robot_paths):
+    def bfs(self, graph, list_edges, queue, visited, parents, robot, all_goals, butters, robot_paths, reverse = False):
         ''' Core BFS algorithm '''
 
         current = queue.pop(0)  # Get current node
@@ -195,7 +195,6 @@ class BI_BFS:
         while self.src_queue and self.dest_queue:
             
             # BFS in forward direction from Source Vertex
-            # try:
             self.bfs(
                 graph = graph,
                 list_edges = list_edges,
@@ -207,28 +206,20 @@ class BI_BFS:
                 butters = butters,
                 robot_paths = self.src_robot_paths,
             )
-            # except:
-            #     print('Err - BFS src')
-            #     return []
 
             # BFS in reverse direction from Destination Vertex
-            # try:
             self.bfs(
                 graph = graph,
                 list_edges = list_edges,
                 queue = self.dest_queue,
                 visited = self.dest_visited,
                 parents = self.dest_parents,
-                robot = goal,
+                robot = None,
                 all_goals = all_goals,
                 butters = butters,
                 robot_paths = self.dest_robot_paths,
-                reverse = True,
             )
-            # except:
-            #     print('Err - BFS dest')
-            #     return []
-            
+
             # Check for intersecting vertex
             intersecting_node = self.is_intersecting()
 
