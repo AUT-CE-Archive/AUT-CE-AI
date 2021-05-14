@@ -86,7 +86,7 @@ class BI_BFS:
 
 
     # Function for Breadth First Search
-    def bfs(self, graph, list_edges, queue, visited, parents, robot, all_goals, butters, robot_paths, reverse = False):
+    def bfs(self, graph, list_edges, queue, visited, parents, robot, all_goals, butters, robot_paths):
         ''' Core BFS algorithm '''
 
         current = queue.pop(0)  # Get current node
@@ -122,6 +122,7 @@ class BI_BFS:
                     parents = parents,
                     robot_paths = robot_paths,
                 )
+
 
                 if len(robot_path) == 1:
                     continue
@@ -245,7 +246,7 @@ class BI_BFS:
 
                 node = intersecting_node
                 while node != goal.get_coor():                    
-                    path.append((self.dest_parents[node], []))
+                    path.append((self.dest_parents[node], [self.dest_parents[node], node]))
                     node = self.dest_parents[node]
 
                 return path
