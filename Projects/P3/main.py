@@ -85,6 +85,43 @@ def forward_checking(table, x, y, n):
     return table
 
 
+def mac(table, x, y, n):
+    ''' Maitaining Arc Consistancy '''
+
+    def get_neightbors(table, x, y, n):
+        ''' Returns the naighbors for the given x,y '''
+
+        neighbors = []
+        for i in range(n):
+            if table[x][i] == '-':
+                neighbors.append((x, i))
+            if table[i][y] == '-':
+                neighbors.append((i, y))
+        return neighbors
+
+    queue = [(x, y)]
+    while len(queue) != 0:
+
+        x, y = queue.pop(0)
+        for neighbor in get_neightbors(table, x, y, n):
+
+            _x, _y = neighbor[0], neighbor[1]
+            options = []
+
+            if test_candidate(_x, _y, table, n, '1'):
+                options.append('1')
+            if test_candidate(_x, _y, table, n, '0'):
+                options.append('0')
+
+            if len(options) == 0:
+                return False
+            elif len(options) == 1:
+                table[_x][_y] = options[0]
+                queue.append((_x, _y))
+
+    return table
+
+
 def test_candidate(x, y, table, n, option):
         ''' Tests the candiate for options '''
 
@@ -94,7 +131,7 @@ def test_candidate(x, y, table, n, option):
         return is_ok(temp_table, n)
 
 
-def back_track(table, n):
+def back_track(table, n, forward_check):
     ''' Back Track '''    
 
 
@@ -119,7 +156,6 @@ def back_track(table, n):
     else:
         back_tack_list.append((table, x, y, options))
 
-
     while len(back_tack_list) != 0:
         if len(back_tack_list[-1][3]) == 0:
             back_tack_list.pop(-1)
@@ -132,12 +168,17 @@ def back_track(table, n):
 
             if is_full(temp_table, n):
                 return temp_table
-
-            # Forward Checking!
-            temp_table = forward_checking(temp_table, x, y, n)            
+            
+            if forward_check:   # Forward Checking!
+                temp_table = forward_checking(temp_table, x, y, n)            
+            else:               # MAC!
+                temp_table = mac(temp_table, x, y, n)
 
             if not temp_table:
                 continue
+
+            if is_full(temp_table, n):
+                return temp_table            
 
             # Save for later Animation
             tables.append(temp_table)
@@ -160,15 +201,15 @@ def back_track(table, n):
 if __name__ == '__main__':
 
     # Read puzzle
-    rows, cols, table = read_file('puzzles/puzzle4.txt')
+    rows, cols, table = read_file('puzzles/puzzle6.txt')
 
-    result = back_track(table, rows)    
+    result = back_track(table, rows, forward_check = False)    
 
     
     if result not in [0, 1]:
         # Run GUI
         tables.append(result)
-        draw_gui(tables, rows, 400)
+        # draw_gui(tables, rows, 400)
 
         # Prettify
         pretty_print(result)
