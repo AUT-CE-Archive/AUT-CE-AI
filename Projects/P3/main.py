@@ -1,6 +1,9 @@
 import copy
 from Rules import *
+from gui import draw_gui
 
+
+tables = []
 
 def read_file(filepath):
     ''' Reads and returns the puzzle file '''
@@ -131,10 +134,13 @@ def back_track(table, n):
                 return temp_table
 
             # Forward Checking!
-            temp_table = forward_checking(temp_table, x, y, n)
+            temp_table = forward_checking(temp_table, x, y, n)            
 
             if not temp_table:
-                continue            
+                continue
+
+            # Save for later Animation
+            tables.append(temp_table)
 
             x, y, count = LCV(temp_table, n)
 
@@ -152,15 +158,22 @@ def back_track(table, n):
 
 # Driver Function
 if __name__ == '__main__':
-    rows, cols, table = read_file('puzzles/puzzle6.txt')
 
+    # Read puzzle
+    rows, cols, table = read_file('puzzles/puzzle4.txt')
 
-    result = back_track(table, rows)
+    result = back_track(table, rows)    
+
     
     if result not in [0, 1]:
+        # Run GUI
+        tables.append(result)
+        draw_gui(tables, rows, 400)
+
+        # Prettify
         pretty_print(result)
     else:
-        print(result)
+        print(result)    
 
 
     # print(check_count(table, rows))
