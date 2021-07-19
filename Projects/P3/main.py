@@ -201,9 +201,9 @@ def back_track(table, n, forward_check):
 if __name__ == '__main__':
 
     # Read puzzle
-    rows, cols, table = read_file('puzzles/puzzle6.txt')
+    rows, cols, table = read_file('puzzles/puzzle0.txt')
 
-    result = back_track(table, rows, forward_check = False)    
+    result = back_track(table, rows, forward_check = True)    
 
     
     if result not in [0, 1]:
