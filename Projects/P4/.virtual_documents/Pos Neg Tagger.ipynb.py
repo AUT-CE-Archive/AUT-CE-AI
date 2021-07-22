@@ -41,7 +41,7 @@ def clean_sentence(text):
     return re.sub('\'s', '', text)
 
 # Clean sentences
-comments_df['cleaned_sentence'] = comments_df['raw_sentence'].apply(clean_sentence)
+# comments_df['cleaned_sentence'] = comments_df['raw_sentence'].apply(clean_sentence)
 
 
 comments_df.to_csv('Datasets/Processed/comments_df.csv', index = False)
